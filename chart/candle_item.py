@@ -36,8 +36,11 @@ class CandleStickItem(pg.GraphicsObject):
             p.setPen(pen)
             p.setBrush(brush)
 
-            p.drawLine(QtCore.QPointF(index, row["low"]), QtCore.QPointF(index, row["high"]))
-            p.drawRect(QtCore.QRectF(index - w, row["open"], w * 2, row["close"] - row["open"]))
+            if row["low"] == row["high"]:
+                p.drawRect(QtCore.QRectF(index - w, row["open"], w * 2, row["close"] - row["open"]))
+            else:
+                p.drawLine(QtCore.QPointF(index, row["low"]), QtCore.QPointF(index, row["high"]))
+                p.drawRect(QtCore.QRectF(index - w, row["open"], w * 2, row["close"] - row["open"]))
         p.end()
         return p
 

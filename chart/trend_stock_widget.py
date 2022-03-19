@@ -7,10 +7,10 @@ from chart.kline_widget import KLineWidget
 from db.db import engine
 
 
-class ShortStockPoolWidget(QWidget):
+class TrendStockPoolWidget(QWidget):
 
     def __init__(self, parent=None):
-        super(ShortStockPoolWidget, self).__init__(parent)
+        super(TrendStockPoolWidget, self).__init__(parent)
         self.stocks_daily = None
         self.stocks = None
         self.concept_stocks = None
@@ -45,12 +45,13 @@ class ShortStockPoolWidget(QWidget):
 
     def _refreshTree(self):
         head_item = None
-        item = pg.TreeWidgetItem(["短线股", "1", "1", "1"])
+        item = pg.TreeWidgetItem(["趋势股", "1", "1", "1"])
         self.tree.addTopLevelItem(item)
-        short_stocks = pd.read_sql(
-            sql="select * from short_stock_pool_tab where delete_status = 0 order by count desc, weight desc",
+        trend_stocks = pd.read_sql(
+            sql="select * from trend_stock_pool_tab where delete_status = 0 order by count desc, level desc",
             con=engine())
-        for i, stock_row in short_stocks.iterrows():
+        trend_stocks = trend_stocks.rename(columns={"count": "weight"})
+        for i, stock_row in trend_stocks.iterrows():
             sub_item = pg.TreeWidgetItem(
                 [stock_row["name"], stock_row["ts_code"], str(stock_row["weight"]),
                  str(stock_row["level"])])
@@ -80,4 +81,4 @@ class ShortStockPoolWidget(QWidget):
         self.concepts = pd.read_sql(sql="select * from concept_pool_tab where delete_status=0", con=engine())
         self.concepts.sort_values(by=["count", "weight", "pct_chg"], ascending=[False, False, False], inplace=True)
         self.concept_stocks = pd.read_sql(sql="select * from concept_stocks_tab", con=engine())
-        self.stocks = pd.read_sql(sql="select * from short_stock_pool_tab where delete_status = 0", con=engine())
+        self.stocks = pd.read_sql(sql="select * from trend_stock_pool_tab where delete_status = 0", con=engine()).rename(columns={"count": "weight"})
