@@ -78,7 +78,9 @@ class KLineWidget(QWidget):
         if ts_code is not None:
             stock = pd.merge(
                 pd.read_sql(
-                    sql="select * from stock_daily_tab where ts_code='%s' order by trade_date" % ts_code, con=engine())[["ts_code", "open", "close", "low", "high", "pct_chg", "trade_date"]],
+                    sql="select * from indicator_daily_tab where ts_code='%s' order by trade_date" % ts_code,
+                    con=engine())[["ts_code", "open", "close", "low", "high", "pct_chg", "trade_date", "vol", "dema_3",
+                                   "dema_5", "dema_10", "dema_20", "dema_30", "dema_60", "macd_dif", "macd_dem", "macd_histogram"]],
                 pd.read_sql(
                     sql="select * from short_stock_pool_tab where ts_code='%s' and delete_status=0" % ts_code,
                     con=engine())[["ts_code", "name", "weight", "count", "level"]],
