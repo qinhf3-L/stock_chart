@@ -56,8 +56,8 @@ class CandleStickItem(pg.GraphicsObject):
                 p.drawLine(QtCore.QPointF(index - 1, prema_10), QtCore.QPointF(index, row["dema_10"]))
             prema_10 = row["dema_10"]
             if prema_20 != 0:
-                p.setPen(pg.mkPen('k', width=2))
-                p.setBrush(pg.mkBrush('k'))
+                p.setPen(pg.mkPen('g', width=2))
+                p.setBrush(pg.mkBrush('g'))
                 p.drawLine(QtCore.QPointF(index - 1, prema_20), QtCore.QPointF(index, row["dema_20"]))
             prema_20 = row["dema_20"]
             if prema_30 != 0:
@@ -66,8 +66,8 @@ class CandleStickItem(pg.GraphicsObject):
                 p.drawLine(QtCore.QPointF(index - 1, prema_30), QtCore.QPointF(index, row["dema_30"]))
             prema_30 = row["dema_30"]
             if prema_60 != 0:
-                p.setPen(pg.mkPen('b', width=2))
-                p.setBrush(pg.mkBrush('b'))
+                p.setPen(pg.mkPen('r', width=2))
+                p.setBrush(pg.mkBrush('r'))
                 p.drawLine(QtCore.QPointF(index - 1, prema_60), QtCore.QPointF(index, row["dema_60"]))
             prema_60 = row["dema_60"]
         p.end()

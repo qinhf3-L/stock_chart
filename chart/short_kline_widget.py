@@ -1,6 +1,5 @@
 import pandas as pd
 import pyqtgraph as pg
-from PyQt5.QtWidgets import QGridLayout, QLabel
 from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QWidget, QVBoxLayout
 
@@ -9,12 +8,12 @@ from chart.string_axis import StringAxis
 from db.db import engine
 
 
-class KLineWidget(QWidget):
+class ShortKLineWidget(QWidget):
     init_completed = False
 
     def __init__(self, ts_code=None):
         """Constructor"""
-        super(KLineWidget, self).__init__()
+        super(ShortKLineWidget, self).__init__()
         self.stock = None
         self.date_label = None
         self.weight_label = None
@@ -80,14 +79,15 @@ class KLineWidget(QWidget):
                 pd.read_sql(
                     sql="select * from indicator_daily_tab where ts_code='%s' order by trade_date" % ts_code,
                     con=engine())[["ts_code", "open", "close", "low", "high", "pct_chg", "trade_date", "vol", "dema_3",
-                                   "dema_5", "dema_10", "dema_20", "dema_30", "dema_60", "macd_dif", "macd_dem", "macd_histogram"]],
+                                   "dema_5", "dema_10", "dema_20", "dema_30", "dema_60", "macd_dif", "macd_dem",
+                                   "macd_histogram"]],
                 pd.read_sql(
                     sql="select * from short_stock_pool_tab where ts_code='%s' and delete_status=0" % ts_code,
                     con=engine())[["ts_code", "name", "weight", "count", "level"]],
                 on="ts_code")
 
             self.stock = stock
-            
+
             self.axisTime.update_xdict(dict(enumerate(self.stock["trade_date"].tolist())))
 
     def refresh_all(self, redraw=True, update=False):
@@ -160,12 +160,12 @@ class KLineWidget(QWidget):
         self.close_label.setText("收盘价:     " + str(latest_data.get("close")),
                                  size='12pt', color=color)
         self.high_label.setText("最高价:     " + str(latest_data.get("high")),
-                                 size='12pt', color=color)
+                                size='12pt', color=color)
         self.low_label.setText("最低价:     " + str(latest_data.get("low")),
-                                 size='12pt', color=color)
+                               size='12pt', color=color)
         self.chg_label.setText("涨跌幅:     " + str(latest_data.get("pct_chg")),
-                                 size='12pt', color=color)
+                               size='12pt', color=color)
         self.weight_label.setText("推荐力度:     " + str(latest_data.get("count")) + "-" + str(latest_data.get("weight")),
-                                 size='12pt', color=color)
+                                  size='12pt', color=color)
         self.date_label.setText("入选日期:     " + str(latest_data.get("trade_date")),
-                                 size='12pt', color=color)
+                                size='12pt', color=color)

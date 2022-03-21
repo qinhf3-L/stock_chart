@@ -3,7 +3,7 @@ import pyqtgraph as pg
 from qtpy import QtWidgets
 from qtpy.QtWidgets import QWidget, QTreeWidget, QHBoxLayout
 
-from chart.kline_widget import KLineWidget
+from chart.short_kline_widget import ShortKLineWidget
 from db.db import engine
 
 
@@ -34,7 +34,7 @@ class ShortStockPoolWidget(QWidget):
         self._refreshTree()
         self.tree.itemClicked.connect(self._on_tree_click)
 
-        self.kline_pw = KLineWidget(self.current_ts_code)
+        self.kline_pw = ShortKLineWidget(self.current_ts_code)
 
         self.splitter.addWidget(self.tree)
         self.splitter.addWidget(self.kline_pw)
@@ -50,6 +50,7 @@ class ShortStockPoolWidget(QWidget):
         short_stocks = pd.read_sql(
             sql="select * from short_stock_pool_tab where delete_status = 0 order by count desc, weight desc",
             con=engine())
+
         for i, stock_row in short_stocks.iterrows():
             sub_item = pg.TreeWidgetItem(
                 [stock_row["name"], stock_row["ts_code"], str(stock_row["weight"]),

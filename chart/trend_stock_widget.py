@@ -3,7 +3,7 @@ import pyqtgraph as pg
 from qtpy import QtWidgets
 from qtpy.QtWidgets import QWidget, QTreeWidget, QHBoxLayout
 
-from chart.kline_widget import KLineWidget
+from chart.trend_kline_widget import TrendKLineWidget
 from db.db import engine
 
 
@@ -34,7 +34,7 @@ class TrendStockPoolWidget(QWidget):
         self._refreshTree()
         self.tree.itemClicked.connect(self._on_tree_click)
 
-        self.kline_pw = KLineWidget(self.current_ts_code)
+        self.kline_pw = TrendKLineWidget(self.current_ts_code)
 
         self.splitter.addWidget(self.tree)
         self.splitter.addWidget(self.kline_pw)
@@ -50,11 +50,10 @@ class TrendStockPoolWidget(QWidget):
         trend_stocks = pd.read_sql(
             sql="select * from trend_stock_pool_tab where delete_status = 0 order by count desc, level desc",
             con=engine())
-        trend_stocks = trend_stocks.rename(columns={"count": "weight"})
         for i, stock_row in trend_stocks.iterrows():
             sub_item = pg.TreeWidgetItem(
-                [stock_row["name"], stock_row["ts_code"], str(stock_row["weight"]),
-                 str(stock_row["level"])])
+                [stock_row["name"], stock_row["ts_code"], str(stock_row["level"]),
+                 str(stock_row["count"])])
             if head_item is None:
                 head_item = sub_item
             item.addChild(sub_item)
@@ -64,14 +63,14 @@ class TrendStockPoolWidget(QWidget):
                 self.concept_stocks[self.concept_stocks["concept_name"] == concept_row["concept_name"]],
                 self.stocks, on=["symbol"])
             if len(group) > 3:
-                group.sort_values(by=["level", "weight"], ascending=[False, False], inplace=True)
+                group.sort_values(by=["level", "count"], ascending=[False, False], inplace=True)
                 item = pg.TreeWidgetItem(
                     [concept_row["concept_name"], str(concept_row["count"]), str(concept_row["weight"]),
                      str(concept_row["pct_chg"])])
                 self.tree.addTopLevelItem(item)
                 for j, stock_row in group.iterrows():
                     sub_item = pg.TreeWidgetItem(
-                        [stock_row["name"], stock_row["ts_code"], str(stock_row["weight"]), str(stock_row["level"])])
+                        [stock_row["name"], stock_row["ts_code"], str(stock_row["level"]), str(stock_row["count"])])
                     item.addChild(sub_item)
 
         self.tree.setCurrentItem(head_item)
@@ -81,4 +80,4 @@ class TrendStockPoolWidget(QWidget):
         self.concepts = pd.read_sql(sql="select * from concept_pool_tab where delete_status=0", con=engine())
         self.concepts.sort_values(by=["count", "weight", "pct_chg"], ascending=[False, False, False], inplace=True)
         self.concept_stocks = pd.read_sql(sql="select * from concept_stocks_tab", con=engine())
-        self.stocks = pd.read_sql(sql="select * from trend_stock_pool_tab where delete_status = 0", con=engine()).rename(columns={"count": "weight"})
+        self.stocks = pd.read_sql(sql="select * from trend_stock_pool_tab where delete_status = 0 and level > 0", con=engine())
